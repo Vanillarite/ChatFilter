@@ -8,9 +8,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 public sealed interface Punishment {
   Punishment.Action action();
-  default void run(ChatFilter plugin, AsyncChatEvent chat) {
-    plugin.getLogger().info("Punishment %s %s taken against %s".formatted(this, action(), chat.getPlayer()));
-  }
+  void run(ChatFilter plugin, AsyncChatEvent chat);
 
   enum Action {
     Warn, Mute, Drop, Announce
@@ -21,6 +19,11 @@ public sealed interface Punishment {
       String warning
   ) implements Punishment {
     public Punishment.Action action() { return Action.Warn; }
+
+    @Override
+    public void run(ChatFilter plugin, AsyncChatEvent chat) {
+      plugin.prefixFor(chat.getPlayer(), PrefixKind.WARNING).logged(warning);
+    }
   }
 
   @ConfigSerializable

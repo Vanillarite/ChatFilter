@@ -27,8 +27,16 @@ public interface Filter {
       int buffer,
       Duration timeout,
       double similarityThreshold,
-      int minLength
+      int minLength,
+      Check[] checks
   ) implements Filter {
+    @ConfigSerializable
+    public record Check(
+        int matchesRequired,
+        ArrayList<Punishment> punish
+    ) {
+
+    }
   }
 
   @ConfigSerializable

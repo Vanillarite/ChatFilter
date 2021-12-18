@@ -23,9 +23,11 @@ repeated:
             warning: "Do not send so many repeated messages!"
       - matches_required: 5
         punish:
+          - action: drop
+          - action: announce
+            message: "<i><gold><user> <red>was automatically muted by the server"
           - action: mute
             reason: "automated new player repeated spam"
-            broadcast: "<i><gold><user> <red>was automatically muted by the server"
 links:
   - immune_permission: ten
     buffer: 3

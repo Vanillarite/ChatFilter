@@ -8,10 +8,14 @@ import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.paper.PaperCommandManager;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.vanillarite.filter.config.Config;
 import com.vanillarite.filter.config.DurationSerializer;
+import com.vanillarite.filter.config.Filter;
 import com.vanillarite.filter.config.PrefixKind;
 import com.vanillarite.filter.config.Punishment;
 import com.vanillarite.filter.config.PunishmentSerializer;
@@ -62,11 +66,16 @@ public final class ChatFilter extends JavaPlugin {
           .register(Punishment.class, PunishmentSerializer.INSTANCE)
           .register(Duration.class, DurationSerializer.INSTANCE))
       );
+  private final Table<UUID, Filter.Repeated, String[]> bufferTable = Tables.synchronizedTable(HashBasedTable.create());
   private final File configFile = new File(this.getDataFolder(), "config.yml");
   private BanManagerPlugin bm;
 
   public Config config() {
     return config;
+  }
+
+  public Table<UUID, Filter.Repeated, String[]> bufferTable() {
+    return bufferTable;
   }
 
   public static ObjectMapper.Factory objectFactory() {

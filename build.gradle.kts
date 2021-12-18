@@ -36,6 +36,7 @@ dependencies {
     implementation("org.spongepowered", "configurate-yaml", "4.1.2")
     compileOnly("me.confuser.banmanager", "BanManagerCommon", "7.6.0-SNAPSHOT")
     compileOnly("me.confuser.banmanager", "BanManagerBukkit", "7.6.0-SNAPSHOT")
+    implementation("org.apache.commons", "commons-text", "1.9")
 }
 
 java {
