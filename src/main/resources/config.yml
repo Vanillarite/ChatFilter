@@ -1,0 +1,41 @@
+prefix:
+  warning: "<gradient:#eb4034:#eb7134><b>WARNING</gradient> <#eae9eb>»<r> "
+  auto_action: "<gradient:#D219A8:#EB60DE><b>AUTO-PUNISHMENT</gradient> <#eae9eb>»<r> "
+triggers:
+  - immune_permission: ten
+    message: 〷〷〷
+    punish:
+      - action: drop
+      - action: announce
+        message: "<i><gold><user> <red>was automatically muted by the server"
+      - action: mute
+        reason: "automated new player filter"
+repeated:
+  - immune_permission: ten
+    buffer: 7
+    timeout: 5m
+    similarity_threshold: 0.9
+    min_length: 6
+    checks:
+      - matches_required: 3
+        punish:
+          - action: warn
+            warning: "Do not send so many repeated messages!"
+      - matches_required: 5
+        punish:
+          - action: mute
+            reason: "automated new player repeated spam"
+            broadcast: "<i><gold><user> <red>was automatically muted by the server"
+links:
+  - immune_permission: ten
+    buffer: 3
+    checks:
+      - matches_required: 1
+        punish:
+          - action: warn
+            warning: "Please play on the server for a bit before sending links!"
+      - matches_required: 3
+        punish:
+          - action: mute
+            reason: "automated new player link spam"
+            broadcast: "<i><gold><user> <red>was automatically muted by the server"
