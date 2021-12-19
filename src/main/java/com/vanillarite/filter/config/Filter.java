@@ -1,6 +1,5 @@
 package com.vanillarite.filter.config;
 
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
@@ -18,7 +17,7 @@ public interface Filter {
       String immunePermission,
       String message,
       ArrayList<Punishment> punish
-  ) implements Filter {
+  ) implements Filter, PunishExecutor {
   }
 
   @ConfigSerializable
@@ -34,7 +33,7 @@ public interface Filter {
     public record Check(
         int matchesRequired,
         ArrayList<Punishment> punish
-    ) {
+    ) implements PunishExecutor {
 
     }
   }

@@ -20,6 +20,7 @@ import com.vanillarite.filter.config.PrefixKind;
 import com.vanillarite.filter.config.Punishment;
 import com.vanillarite.filter.config.PunishmentSerializer;
 import com.vanillarite.filter.listener.ChatListener;
+import com.vanillarite.filter.util.PastMessage;
 import com.vanillarite.filter.util.Prefixer;
 import me.confuser.banmanager.bukkit.BMBukkitPlugin;
 import me.confuser.banmanager.common.BanManagerPlugin;
@@ -66,7 +67,7 @@ public final class ChatFilter extends JavaPlugin {
           .register(Punishment.class, PunishmentSerializer.INSTANCE)
           .register(Duration.class, DurationSerializer.INSTANCE))
       );
-  private final Table<UUID, Filter.Repeated, String[]> bufferTable = Tables.synchronizedTable(HashBasedTable.create());
+  private final Table<UUID, Filter.Repeated, PastMessage[]> bufferTable = Tables.synchronizedTable(HashBasedTable.create());
   private final File configFile = new File(this.getDataFolder(), "config.yml");
   private BanManagerPlugin bm;
 
@@ -74,7 +75,7 @@ public final class ChatFilter extends JavaPlugin {
     return config;
   }
 
-  public Table<UUID, Filter.Repeated, String[]> bufferTable() {
+  public Table<UUID, Filter.Repeated, PastMessage[]> bufferTable() {
     return bufferTable;
   }
 
@@ -196,15 +197,18 @@ public final class ChatFilter extends JavaPlugin {
       var mute = new PlayerMuteData(target, this.actor, reason, false, false);
       var created = this.bm.getPlayerMuteStorage().mute(mute);
       this.getLogger().info("MUTE ACTION %s -> %s".formatted(target, created));
-//      this.networkBroadcast(
-//          prefix.component(
-//              section().getString("broadcast"),
-//              Template.template("user", chat.getPlayer().getName())),
-//          null);
     } catch (SQLException ex) {
       this.getLogger().severe("Failed to mute %s because of %s!!".formatted(player, ex));
       ex.printStackTrace();
     }
+  }
+
+  public static <T> void shift(T[] array, T incoming) {
+    int size = array.length;
+    if (size == 0) return;
+
+    System.arraycopy(array, 0, array, 1, size - 1);
+    array[0] = incoming;
   }
 
   public Prefixer prefixFor(CommandSender sender, PrefixKind kind) {
