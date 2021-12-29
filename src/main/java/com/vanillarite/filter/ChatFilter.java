@@ -34,6 +34,9 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,7 +54,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 
-public final class ChatFilter extends JavaPlugin {
+public final class ChatFilter extends JavaPlugin implements Listener {
   public static final MiniMessage m = MiniMessage.miniMessage();
   public static final UUID uuid = UUID.fromString("cea5e000-6a98-58d0-ad28-28874d04db21");
   private PlayerData actor;
@@ -140,12 +143,15 @@ public final class ChatFilter extends JavaPlugin {
     AnnotationParser<CommandSender> annotationParser =
         new AnnotationParser<>(manager, CommandSender.class, commandMetaFunction);
 
+    this.getServer().getPluginManager().registerEvents(new ChatListener(this), this);
+  }
+
+  @EventHandler
+  public void onServerStartup(ServerLoadEvent e) {
     this.bm =
         Objects.requireNonNull((BMBukkitPlugin) Bukkit.getPluginManager().getPlugin("BanManager"))
             .getPlugin();
     this.setupBmActor();
-
-    this.getServer().getPluginManager().registerEvents(new ChatListener(this), this);
   }
 
   public void networkBroadcast(@NotNull Component c, @Nullable CommandSender sender) {
