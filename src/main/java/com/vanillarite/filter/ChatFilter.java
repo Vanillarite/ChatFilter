@@ -67,7 +67,7 @@ public final class ChatFilter extends JavaPlugin {
           .register(Punishment.class, PunishmentSerializer.INSTANCE)
           .register(Duration.class, DurationSerializer.INSTANCE))
       );
-  private final Table<UUID, Filter.Repeated, PastMessage[]> bufferTable = Tables.synchronizedTable(HashBasedTable.create());
+  private final Table<UUID, Filter.MultiCheck, PastMessage[]> bufferTable = Tables.synchronizedTable(HashBasedTable.create());
   private final File configFile = new File(this.getDataFolder(), "config.yml");
   private BanManagerPlugin bm;
 
@@ -75,7 +75,7 @@ public final class ChatFilter extends JavaPlugin {
     return config;
   }
 
-  public Table<UUID, Filter.Repeated, PastMessage[]> bufferTable() {
+  public Table<UUID, Filter.MultiCheck, PastMessage[]> bufferTable() {
     return bufferTable;
   }
 

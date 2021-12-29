@@ -1,5 +1,7 @@
 package com.vanillarite.filter.config;
 
+import com.vanillarite.filter.ChatFilter;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.permissions.Permissible;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
@@ -10,6 +12,23 @@ public interface Filter {
   String immunePermission();
   default boolean notImmune(Permissible player) {
     return !player.hasPermission("chatfilter.immune." + immunePermission());
+  }
+
+  @ConfigSerializable
+  record Check(
+      int matchesRequired,
+      ArrayList<Punishment> punish
+  ) implements PunishExecutor {
+  }
+
+  interface MultiCheck {
+    int buffer();
+    Check[] checks();
+    default void punish(int violations, ChatFilter plugin, AsyncChatEvent chat) {
+      for (final var check : this.checks()) {
+        if (violations == check.matchesRequired()) check.punish(plugin, chat);
+      }
+    }
   }
 
   @ConfigSerializable
@@ -28,20 +47,14 @@ public interface Filter {
       double similarityThreshold,
       int minLength,
       Check[] checks
-  ) implements Filter {
-    @ConfigSerializable
-    public record Check(
-        int matchesRequired,
-        ArrayList<Punishment> punish
-    ) implements PunishExecutor {
-
-    }
+  ) implements Filter, MultiCheck {
   }
 
   @ConfigSerializable
   record Links(
       String immunePermission,
-      int buffer
-  ) implements Filter {
+      int buffer,
+      Check[] checks
+  ) implements Filter, MultiCheck {
   }
 }
