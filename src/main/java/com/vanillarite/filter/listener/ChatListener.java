@@ -11,9 +11,15 @@ import org.bukkit.event.Listener;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.regex.Pattern;
 
 public record ChatListener(ChatFilter plugin) implements Listener {
   public static final SorensenDice similarityChecker = new SorensenDice();
+  private static final Pattern urlPattern = Pattern.compile(
+      "(?:^|[\\W])((ht|f)tp(s?):\\/\\/|www\\.)"
+          + "(([\\w\\-]+\\.)+?([\\w\\-.~]+\\/?)+"
+          + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:\\/{};']*)",
+      Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
   @EventHandler(priority = EventPriority.LOWEST)
   public void onChat(AsyncChatEvent chat) {
@@ -41,12 +47,32 @@ public record ChatListener(ChatFilter plugin) implements Listener {
           if (pastMessage.message().length() < repeated.minLength()) continue;
           double similarity = similarityChecker.similarity(message.string(), pastMessage.message());
           if (similarity >= repeated.similarityThreshold()) violations++;
-          if ((1.0 - similarity) >= repeated.similarityThreshold()) violations++;
         }
         ChatFilter.shift(buffer, PastMessage.now(message.string()));
-        for (final var check : repeated.checks()) {
-          if (violations == check.matchesRequired()) check.punish(plugin, chat);
+        repeated.punish(violations, plugin, chat);
+      }
+    }
+
+    for (final var link : plugin.config().links()) {
+      if (link.notImmune(player)) {
+        var buffer = plugin.bufferTable().get(player.getUniqueId(), link);
+        if (buffer == null) {
+          buffer = new PastMessage[link.buffer()];
+          plugin.bufferTable().put(player.getUniqueId(), link, buffer);
         }
+        int violations = 0;
+        var now = Instant.now();
+        ChatFilter.shift(buffer, PastMessage.now(message.string()));
+        for (final var pastMessage : buffer) {
+          if (pastMessage == null) continue;
+          boolean foundViolation = false;
+          // if (Duration.between(pastMessage.time(), now).compareTo(link.timeout()) > 0) continue; // Do we want timeouts on link detection?
+          for (final var messagePart : pastMessage.message().split("\\s+")) {
+            if (urlPattern.matcher(messagePart).matches()) foundViolation = true;
+          }
+          if (foundViolation) violations++; // extra indirection to avoid multiple increments per message
+        }
+        link.punish(violations, plugin, chat);
       }
     }
   }
