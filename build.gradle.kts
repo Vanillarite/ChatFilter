@@ -52,6 +52,8 @@ tasks {
             exclude(dependency("org.checkerframework:"))
             exclude(dependency("org.jetbrains:"))
             exclude(dependency("org.intellij:"))
+            exclude(dependency("org.yaml:snakeyaml:"))
+            exclude(dependency("net.jcip:"))
         }
 
         relocate("cloud.commandframework", "${rootProject.group}.filter.shade.cloud")
