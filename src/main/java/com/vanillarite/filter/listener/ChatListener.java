@@ -3,8 +3,8 @@ package com.vanillarite.filter.listener;
 import com.vanillarite.filter.ChatFilter;
 import com.vanillarite.filter.util.MemoizedChatMessage;
 import com.vanillarite.filter.util.PastMessage;
+import info.debatty.java.stringsimilarity.SorensenDice;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -13,7 +13,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 public record ChatListener(ChatFilter plugin) implements Listener {
-  public static final LevenshteinDistance levenshtein = new LevenshteinDistance();
+  public static final SorensenDice similarityChecker = new SorensenDice();
 
   @EventHandler(priority = EventPriority.LOWEST)
   public void onChat(AsyncChatEvent chat) {
@@ -39,8 +39,8 @@ public record ChatListener(ChatFilter plugin) implements Listener {
           if (pastMessage == null) continue;
           if (Duration.between(pastMessage.time(), now).compareTo(repeated.timeout()) > 0) continue;
           if (pastMessage.message().length() < repeated.minLength()) continue;
-          double divisor = Math.max(message.string().length(), pastMessage.message().length());
-          double similarity = levenshtein.apply(message.string(), pastMessage.message()) / divisor;
+          double similarity = similarityChecker.similarity(message.string(), pastMessage.message());
+          if (similarity >= repeated.similarityThreshold()) violations++;
           if ((1.0 - similarity) >= repeated.similarityThreshold()) violations++;
         }
         ChatFilter.shift(buffer, PastMessage.now(message.string()));

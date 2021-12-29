@@ -36,7 +36,7 @@ dependencies {
     implementation("org.spongepowered", "configurate-yaml", "4.1.2")
     compileOnly("me.confuser.banmanager", "BanManagerCommon", "7.6.0-SNAPSHOT")
     compileOnly("me.confuser.banmanager", "BanManagerBukkit", "7.6.0-SNAPSHOT")
-    implementation("org.apache.commons", "commons-text", "1.9")
+    implementation("info.debatty", "java-string-similarity", "2.0.0")
 }
 
 java {
@@ -58,6 +58,7 @@ tasks {
         relocate("io.leangen.geantyref", "${rootProject.group}.filter.shade.typetoken")
         relocate("net.kyori.adventure.text.minimessage", "${rootProject.group}.filter.shade.minimessage")
         relocate("org.spongepowered.configurate", "${rootProject.group}.filter.shade.configurate")
+        relocate("info.debatty", "${rootProject.group}.filter.shade.debatty")
 
         archiveClassifier.set(null as String?)
         archiveFileName.set(project.name + ".jar")
