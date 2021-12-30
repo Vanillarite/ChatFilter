@@ -16,7 +16,7 @@ public class DurationSerializer extends ScalarSerializer<Duration> {
   }
 
   @Override
-  public Duration deserialize(Type type, Object value) throws SerializationException {
+  public Duration deserialize(Type type, Object value) {
     final String potential = value.toString().toUpperCase(Locale.ROOT).replace(" ", "");
     return Duration.parse("PT" + potential);
   }
