@@ -15,7 +15,7 @@ val gitBuild: String = run {
 }
 
 group = "com.vanillarite"
-version = "0.0.3-b$gitBuild"
+version = "0.0.4-b$gitBuild"
 
 repositories {
     mavenCentral()
