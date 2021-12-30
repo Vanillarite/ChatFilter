@@ -36,7 +36,7 @@ public record ChatListener(ChatFilter plugin) implements Listener {
       if (trigger.notImmune(player)) {
         for (final var pattern : trigger.regex()) {
           if (pattern.matcher(message.string()).matches()) {
-            trigger.punish(plugin, chat);
+            trigger.punish(plugin, chat, message);
             break;
           }
         }
@@ -63,7 +63,7 @@ public record ChatListener(ChatFilter plugin) implements Listener {
           if ((1.0 - similarity) >= repeated.similarityThreshold()) violations++;
         }
         ChatFilter.shift(buffer, PastMessage.now(message.string()));
-        if (violations > previousViolations) repeated.punish(violations, plugin, chat);
+        if (violations > previousViolations) repeated.punish(violations, plugin, chat, message);
         plugin.violationsTable().put(player.getUniqueId(), repeated, violations);
       }
     }
@@ -85,7 +85,7 @@ public record ChatListener(ChatFilter plugin) implements Listener {
           violations++;
         }
         ChatFilter.shift(buffer, PastMessage.now(message.string()));
-        if (violations > previousViolations) spam.punish(violations, plugin, chat);
+        if (violations > previousViolations) spam.punish(violations, plugin, chat, message);
         plugin.violationsTable().put(player.getUniqueId(), spam, violations);
       }
     }
@@ -110,7 +110,7 @@ public record ChatListener(ChatFilter plugin) implements Listener {
           }
           if (foundViolation) violations++; // extra indirection to avoid multiple increments per message
         }
-        if (violations > previousViolations) link.punish(violations, plugin, chat);
+        if (violations > previousViolations) link.punish(violations, plugin, chat, message);
         plugin.violationsTable().put(player.getUniqueId(), link, violations);
       }
     }
