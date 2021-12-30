@@ -3,7 +3,8 @@ prefix:
   auto_action: "<gradient:#D219A8:#EB60DE><b>AUTO-PUNISHMENT</gradient> <#eae9eb>»<r> "
 triggers:
   - immune_permission: ten
-    message: 〷〷〷
+    regex:
+      - 〷〷〷
     punish:
       - action: drop
       - action: announce
