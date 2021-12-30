@@ -63,6 +63,28 @@ public record ChatListener(ChatFilter plugin) implements Listener {
       }
     }
 
+    for (final var spam : plugin.config().repeated()) {
+      if (spam.notImmune(player)) {
+        var buffer = plugin.bufferTable().get(player.getUniqueId(), spam);
+        var previousViolations = plugin.violationsTable().get(player.getUniqueId(), spam);
+        if (previousViolations == null) previousViolations = 0;
+        if (buffer == null) {
+          buffer = new PastMessage[spam.buffer()];
+          plugin.bufferTable().put(player.getUniqueId(), spam, buffer);
+        }
+        int violations = 0;
+        var now = Instant.now();
+        for (final var pastMessage : buffer) {
+          if (pastMessage == null) continue;
+          if (Duration.between(pastMessage.time(), now).compareTo(spam.timeout()) > 0) continue;
+          violations++;
+        }
+        ChatFilter.shift(buffer, PastMessage.now(message.string()));
+        if (violations > previousViolations) spam.punish(violations, plugin, chat);
+        plugin.violationsTable().put(player.getUniqueId(), spam, violations);
+      }
+    }
+
     for (final var link : plugin.config().links()) {
       if (link.notImmune(player)) {
         var buffer = plugin.bufferTable().get(player.getUniqueId(), link);

@@ -28,16 +28,35 @@ repeated:
             message: "<i><gold><user> <red>was automatically muted by the server"
           - action: mute
             reason: "automated new player repeated spam"
+spam:
+  - immune_permission: ten
+    buffer: 10
+    timeout: 2m
+    checks:
+      - matches_required: 5
+        punish:
+          - action: warn
+            warning: "Do not send messages that fast!"
+      - matches_required: 10
+        punish:
+          - action: drop
+          - action: announce
+            message: "<i><gold><user> <red>was automatically muted by the server"
+          - action: mute
+            reason: "automated new player spam"
 links:
   - immune_permission: ten
     buffer: 3
     checks:
       - matches_required: 1
         punish:
+          - action: drop
           - action: warn
             warning: "Please play on the server for a bit before sending links!"
       - matches_required: 3
         punish:
+          - action: drop
           - action: mute
             reason: "automated new player link spam"
-            broadcast: "<i><gold><user> <red>was automatically muted by the server"
+          - action: announce
+            message: "<i><gold><user> <red>was automatically muted by the server"

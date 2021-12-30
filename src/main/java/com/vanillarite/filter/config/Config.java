@@ -10,6 +10,7 @@ public record Config (
   Map<PrefixKind, String> prefix,
   ArrayList<Filter.Trigger> triggers,
   ArrayList<Filter.Repeated> repeated,
+  ArrayList<Filter.Spam> spam,
   ArrayList<Filter.Links> links
 ) {
 

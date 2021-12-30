@@ -52,6 +52,15 @@ public interface Filter {
   }
 
   @ConfigSerializable
+  record Spam(
+      String immunePermission,
+      int buffer,
+      Duration timeout,
+      Check[] checks
+  ) implements Filter, MultiCheck {
+  }
+
+  @ConfigSerializable
   record Links(
       String immunePermission,
       int buffer,
