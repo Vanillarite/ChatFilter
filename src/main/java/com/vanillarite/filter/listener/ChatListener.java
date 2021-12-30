@@ -35,7 +35,7 @@ public record ChatListener(ChatFilter plugin) implements Listener {
     for (final var trigger : plugin.config().triggers()) {
       if (trigger.notImmune(player)) {
         for (final var pattern : trigger.regex()) {
-          if (pattern.matcher(message.string()).matches()) {
+          if (pattern.matcher(message.string()).find()) {
             trigger.punish(plugin, chat, message);
             break;
           }
