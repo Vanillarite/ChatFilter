@@ -30,7 +30,6 @@ repeated:
             reason: "automated new player repeated spam"
 spam:
   - immune_permission: ten
-    buffer: 10
     timeout: 2m
     checks:
       - matches_required: 5

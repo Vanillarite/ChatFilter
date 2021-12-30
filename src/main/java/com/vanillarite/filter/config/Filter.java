@@ -54,10 +54,17 @@ public interface Filter {
   @ConfigSerializable
   record Spam(
       String immunePermission,
-      int buffer,
       Duration timeout,
       Check[] checks
   ) implements Filter, MultiCheck {
+    @Override
+    public int buffer() {
+      int buffer = 0;
+      for (final var check : this.checks) {
+        if (check.matchesRequired > buffer) buffer = check.matchesRequired;
+      }
+      return buffer;
+    }
   }
 
   @ConfigSerializable
