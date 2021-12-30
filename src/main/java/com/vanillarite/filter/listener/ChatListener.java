@@ -24,6 +24,7 @@ public record ChatListener(ChatFilter plugin) implements Listener {
 
   @EventHandler(priority = EventPriority.LOWEST)
   public void onChat(AsyncPlayerChatEvent chat) {
+    if (!plugin.state()) return;
     if (chat.getMessage().startsWith("/")) return;
 
     final var player = chat.getPlayer();
@@ -53,8 +54,8 @@ public record ChatListener(ChatFilter plugin) implements Listener {
           if (Duration.between(pastMessage.time(), now).compareTo(repeated.timeout()) > 0) continue;
           if (pastMessage.message().length() < repeated.minLength()) continue;
           int longest = Math.max(message.string().length(), pastMessage.message().length());
-          double similarity = similarityChecker.distance(message.string(), pastMessage.message());
-          if ((similarity / longest) >= repeated.similarityThreshold()) violations++;
+          double similarity = similarityChecker.distance(message.string(), pastMessage.message()) / longest;
+          if ((1.0 - similarity) >= repeated.similarityThreshold()) violations++;
         }
         ChatFilter.shift(buffer, PastMessage.now(message.string()));
         if (violations > previousViolations) repeated.punish(violations, plugin, chat);

@@ -13,6 +13,7 @@ import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.vanillarite.filter.commands.Commands;
 import com.vanillarite.filter.config.Config;
 import com.vanillarite.filter.config.DurationSerializer;
 import com.vanillarite.filter.config.Filter;
@@ -74,6 +75,15 @@ public final class ChatFilter extends JavaPlugin implements Listener {
   private final Table<UUID, Filter.MultiCheck, Integer> violationsTable = Tables.synchronizedTable(HashBasedTable.create());
   private final File configFile = new File(this.getDataFolder(), "config.yml");
   private BanManagerPlugin bm;
+  private boolean state = true;
+
+  public boolean state() {
+    return state;
+  }
+
+  public void state(boolean state) {
+    this.state = state;
+  }
 
   public Config config() {
     return config;
@@ -147,6 +157,7 @@ public final class ChatFilter extends JavaPlugin implements Listener {
                 .build();
     AnnotationParser<CommandSender> annotationParser =
         new AnnotationParser<>(manager, CommandSender.class, commandMetaFunction);
+    annotationParser.parse(new Commands(this));
 
     this.getServer().getPluginManager().registerEvents(this, this);
     this.getServer().getPluginManager().registerEvents(new ChatListener(this), this);
