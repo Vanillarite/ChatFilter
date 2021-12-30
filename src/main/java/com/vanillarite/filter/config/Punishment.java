@@ -30,8 +30,7 @@ public sealed interface Punishment {
 
   @ConfigSerializable
   record Mute(
-      String reason,
-      String broadcast
+      String reason
   ) implements Punishment {
     public Punishment.Action action() { return Action.Mute; }
 

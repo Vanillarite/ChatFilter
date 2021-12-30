@@ -192,9 +192,8 @@ public final class ChatFilter extends JavaPlugin implements Listener {
             () -> {
               if (sender != null) {
                 sender.sendMessage(Component.text("Failed to broadcast because nobody is online", NamedTextColor.RED));
-              } else {
-                getLogger().severe("Failed to broadcast because nobody is online");
               }
+              getLogger().severe("Failed to broadcast because nobody is online");
             });
   }
 
