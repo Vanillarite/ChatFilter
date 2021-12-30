@@ -71,6 +71,7 @@ public final class ChatFilter extends JavaPlugin implements Listener {
           .register(Duration.class, DurationSerializer.INSTANCE))
       );
   private final Table<UUID, Filter.MultiCheck, PastMessage[]> bufferTable = Tables.synchronizedTable(HashBasedTable.create());
+  private final Table<UUID, Filter.MultiCheck, Integer> violationsTable = Tables.synchronizedTable(HashBasedTable.create());
   private final File configFile = new File(this.getDataFolder(), "config.yml");
   private BanManagerPlugin bm;
 
@@ -80,6 +81,10 @@ public final class ChatFilter extends JavaPlugin implements Listener {
 
   public Table<UUID, Filter.MultiCheck, PastMessage[]> bufferTable() {
     return bufferTable;
+  }
+
+  public Table<UUID, Filter.MultiCheck, Integer> violationsTable() {
+    return violationsTable;
   }
 
   public static ObjectMapper.Factory objectFactory() {
@@ -143,6 +148,7 @@ public final class ChatFilter extends JavaPlugin implements Listener {
     AnnotationParser<CommandSender> annotationParser =
         new AnnotationParser<>(manager, CommandSender.class, commandMetaFunction);
 
+    this.getServer().getPluginManager().registerEvents(this, this);
     this.getServer().getPluginManager().registerEvents(new ChatListener(this), this);
   }
 
@@ -152,6 +158,7 @@ public final class ChatFilter extends JavaPlugin implements Listener {
         Objects.requireNonNull((BMBukkitPlugin) Bukkit.getPluginManager().getPlugin("BanManager"))
             .getPlugin();
     this.setupBmActor();
+    this.getLogger().info("Hooked into BanManager (%s), created actor (%s)".formatted(this.bm, this.actor));
   }
 
   public void networkBroadcast(@NotNull Component c, @Nullable CommandSender sender) {
@@ -180,7 +187,6 @@ public final class ChatFilter extends JavaPlugin implements Listener {
             });
   }
 
-
   public void setupBmActor() {
     try {
       final String name = "(auto)" + this.getName();
@@ -207,6 +213,10 @@ public final class ChatFilter extends JavaPlugin implements Listener {
       this.getLogger().severe("Failed to mute %s because of %s!!".formatted(player, ex));
       ex.printStackTrace();
     }
+  }
+
+  public boolean isMuted(Player player) {
+    return this.bm.getPlayerMuteStorage().isMuted(player.getUniqueId());
   }
 
   public static <T> void shift(T[] array, T incoming) {
