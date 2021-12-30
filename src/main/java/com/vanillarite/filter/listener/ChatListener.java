@@ -63,7 +63,7 @@ public record ChatListener(ChatFilter plugin) implements Listener {
       }
     }
 
-    for (final var spam : plugin.config().repeated()) {
+    for (final var spam : plugin.config().spam()) {
       if (spam.notImmune(player)) {
         var buffer = plugin.bufferTable().get(player.getUniqueId(), spam);
         var previousViolations = plugin.violationsTable().get(player.getUniqueId(), spam);
