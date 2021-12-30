@@ -1,6 +1,7 @@
-package com.vanillarite.filter.config;
+package com.vanillarite.filter.punishments;
 
 import com.vanillarite.filter.ChatFilter;
+import com.vanillarite.filter.punishments.Punishment;
 import org.bukkit.event.player.PlayerEvent;
 
 import java.util.ArrayList;

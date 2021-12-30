@@ -15,11 +15,11 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.vanillarite.filter.commands.Commands;
 import com.vanillarite.filter.config.Config;
-import com.vanillarite.filter.config.DurationSerializer;
-import com.vanillarite.filter.config.Filter;
+import com.vanillarite.filter.config.serializers.DurationSerializer;
+import com.vanillarite.filter.filters.MultiCheck;
 import com.vanillarite.filter.config.PrefixKind;
-import com.vanillarite.filter.config.Punishment;
-import com.vanillarite.filter.config.PunishmentSerializer;
+import com.vanillarite.filter.punishments.Punishment;
+import com.vanillarite.filter.config.serializers.PunishmentSerializer;
 import com.vanillarite.filter.listener.ChatListener;
 import com.vanillarite.filter.util.PastMessage;
 import com.vanillarite.filter.util.Prefixer;
@@ -71,8 +71,8 @@ public final class ChatFilter extends JavaPlugin implements Listener {
           .register(Punishment.class, PunishmentSerializer.INSTANCE)
           .register(Duration.class, DurationSerializer.INSTANCE))
       );
-  private final Table<UUID, Filter.MultiCheck, PastMessage[]> bufferTable = Tables.synchronizedTable(HashBasedTable.create());
-  private final Table<UUID, Filter.MultiCheck, Integer> violationsTable = Tables.synchronizedTable(HashBasedTable.create());
+  private final Table<UUID, MultiCheck, PastMessage[]> bufferTable = Tables.synchronizedTable(HashBasedTable.create());
+  private final Table<UUID, MultiCheck, Integer> violationsTable = Tables.synchronizedTable(HashBasedTable.create());
   private final File configFile = new File(this.getDataFolder(), "config.yml");
   private BanManagerPlugin bm;
   private boolean state = true;
@@ -89,11 +89,11 @@ public final class ChatFilter extends JavaPlugin implements Listener {
     return config;
   }
 
-  public Table<UUID, Filter.MultiCheck, PastMessage[]> bufferTable() {
+  public Table<UUID, MultiCheck, PastMessage[]> bufferTable() {
     return bufferTable;
   }
 
-  public Table<UUID, Filter.MultiCheck, Integer> violationsTable() {
+  public Table<UUID, MultiCheck, Integer> violationsTable() {
     return violationsTable;
   }
 

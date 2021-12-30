@@ -1,6 +1,5 @@
-package com.vanillarite.filter.config;
+package com.vanillarite.filter.config.serializers;
 
-import io.leangen.geantyref.TypeToken;
 import org.spongepowered.configurate.serialize.ScalarSerializer;
 import org.spongepowered.configurate.serialize.SerializationException;
 

@@ -1,6 +1,12 @@
-package com.vanillarite.filter.config;
+package com.vanillarite.filter.config.serializers;
 
 import com.vanillarite.filter.ChatFilter;
+import com.vanillarite.filter.punishments.PunishAction;
+import com.vanillarite.filter.punishments.Announce;
+import com.vanillarite.filter.punishments.Drop;
+import com.vanillarite.filter.punishments.Mute;
+import com.vanillarite.filter.punishments.Punishment;
+import com.vanillarite.filter.punishments.Warn;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
@@ -29,12 +35,12 @@ public class PunishmentSerializer implements TypeSerializer<Punishment> {
   @Override
   public Punishment deserialize(final Type type, final ConfigurationNode source) throws SerializationException {
     final ConfigurationNode actionNode = nonVirtualNode(source, ACTION);
-    final var action = actionNode.get(Punishment.Action.class);
+    final var action = actionNode.get(PunishAction.class);
     final var punishmentClass = switch (Objects.requireNonNull(action)) {
-      case Warn -> Punishment.Warn.class;
-      case Mute -> Punishment.Mute.class;
-      case Drop -> Punishment.Drop.class;
-      case Announce -> Punishment.Announce.class;
+      case Warn -> Warn.class;
+      case Mute -> Mute.class;
+      case Drop -> Drop.class;
+      case Announce -> Announce.class;
     };
     return ChatFilter.objectFactory().get(punishmentClass).load(source);
   }
