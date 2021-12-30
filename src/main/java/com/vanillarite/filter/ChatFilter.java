@@ -213,16 +213,18 @@ public final class ChatFilter extends JavaPlugin implements Listener {
   }
 
   public void mute(Player player, String reason) {
-    try {
-      var storage = this.bm.getPlayerStorage();
-      var target = storage.queryForId(UUIDUtils.toBytes(player.getUniqueId()));
-      var mute = new PlayerMuteData(target, this.actor, reason, false, false);
-      var created = this.bm.getPlayerMuteStorage().mute(mute);
-      this.getLogger().info("MUTE ACTION %s -> %s".formatted(target, created));
-    } catch (SQLException ex) {
-      this.getLogger().severe("Failed to mute %s because of %s!!".formatted(player, ex));
-      ex.printStackTrace();
-    }
+    this.getServer().getScheduler().runTaskAsynchronously(this, () -> {
+      try {
+        var storage = this.bm.getPlayerStorage();
+        var target = storage.queryForId(UUIDUtils.toBytes(player.getUniqueId()));
+        var mute = new PlayerMuteData(target, this.actor, reason, false, false);
+        var created = this.bm.getPlayerMuteStorage().mute(mute);
+        this.getLogger().info("MUTE ACTION %s -> %s".formatted(target, created));
+      } catch (SQLException ex) {
+        this.getLogger().severe("Failed to mute %s because of %s!!".formatted(player, ex));
+        ex.printStackTrace();
+      }
+    });
   }
 
   public boolean isMuted(Player player) {
