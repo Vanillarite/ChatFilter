@@ -9,6 +9,9 @@ public interface PunishExecutor {
   ArrayList<Punishment> punish();
 
   default void punish(ChatFilter plugin, PlayerEvent chat) {
-    this.punish().forEach(i -> i.run(plugin, chat));
+    this.punish().forEach(i -> {
+      plugin.getLogger().info("Running punishment %s against %s (%s)".formatted(i.action(), chat.getPlayer().getName(), i.toString()));
+      i.run(plugin, chat);
+    });
   }
 }
