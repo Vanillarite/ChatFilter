@@ -63,7 +63,6 @@ tasks {
         relocate("info.debatty", "${rootProject.group}.filter.shade.debatty")
 
         archiveClassifier.set(null as String?)
-        archiveFileName.set(project.name + ".jar")
         destinationDirectory.set(rootProject.tasks.shadowJar.get().destinationDirectory.get())
     }
     build {
