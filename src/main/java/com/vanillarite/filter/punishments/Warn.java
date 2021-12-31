@@ -7,8 +7,7 @@ import org.bukkit.event.player.PlayerEvent;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 @ConfigSerializable
-public
-record Warn(
+public record Warn(
     String warning
 ) implements Punishment {
   public PunishAction action() {

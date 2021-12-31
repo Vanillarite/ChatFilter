@@ -6,8 +6,7 @@ import org.bukkit.event.player.PlayerEvent;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 @ConfigSerializable
-public
-record Mute(
+public record Mute(
     String reason
 ) implements Punishment {
   public PunishAction action() {

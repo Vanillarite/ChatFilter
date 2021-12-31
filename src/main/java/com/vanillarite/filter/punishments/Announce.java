@@ -9,8 +9,7 @@ import org.bukkit.event.player.PlayerEvent;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
 @ConfigSerializable
-public
-record Announce(
+public record Announce(
     String message
 ) implements Punishment {
   public PunishAction action() {
