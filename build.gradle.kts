@@ -5,7 +5,7 @@ plugins {
 
 val buildNum = System.getenv("CI_PIPELINE_IID") ?: "dirty"
 group = "com.vanillarite"
-version = "0.2.1-$buildNum"
+version = "0.2.2-$buildNum"
 
 repositories {
     mavenCentral()
@@ -14,6 +14,9 @@ repositories {
     maven("https://repo.incendo.org/content/repositories/snapshots")
     maven("https://ci.frostcast.net/plugin/repository/everything")
     maven("https://repo.codemc.io/repository/maven-public/")
+    maven("https://mvn-repo.arim.space/affero-gpl3/")
+    maven("https://mvn-repo.arim.space/lesser-gpl3/")
+    maven("https://mvn-repo.arim.space/gpl3/")
 }
 
 dependencies {
@@ -27,6 +30,7 @@ dependencies {
     compileOnly("me.confuser.banmanager", "BanManagerCommon", "7.6.0-SNAPSHOT")
     compileOnly("me.confuser.banmanager", "BanManagerBukkit", "7.6.0-SNAPSHOT")
     implementation("info.debatty", "java-string-similarity", "2.0.0")
+    compileOnly("space.arim.libertybans", "bans-api", "1.0.0")
 }
 
 java {

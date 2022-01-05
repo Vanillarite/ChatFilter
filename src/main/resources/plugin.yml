@@ -2,5 +2,5 @@ name: ChatFilter
 version: '${version}'
 main: com.vanillarite.filter.ChatFilter
 api-version: 1.17
-softdepend: [ BanManager ]
+softdepend: [ BanManager, LibertyBans ]
 authors: [ rymiel ]

@@ -45,6 +45,14 @@ import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.util.NamingSchemes;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+import space.arim.libertybans.api.LibertyBans;
+import space.arim.libertybans.api.PlayerOperator;
+import space.arim.libertybans.api.PlayerVictim;
+import space.arim.libertybans.api.PunishmentType;
+import space.arim.libertybans.api.punish.DraftPunishment;
+import space.arim.libertybans.api.punish.PunishmentDrafter;
+import space.arim.omnibus.Omnibus;
+import space.arim.omnibus.OmnibusProvider;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -75,6 +83,7 @@ public final class ChatFilter extends JavaPlugin implements Listener {
   private final Table<UUID, MultiCheck, Integer> violationsTable = Tables.synchronizedTable(HashBasedTable.create());
   private final File configFile = new File(this.getDataFolder(), "config.yml");
   private BanManagerPlugin bm;
+  private LibertyBans liberty;
   private boolean state = true;
 
   public boolean state() {
@@ -165,11 +174,18 @@ public final class ChatFilter extends JavaPlugin implements Listener {
 
   @EventHandler
   public void onServerStartup(ServerLoadEvent e) {
-    this.bm =
-        Objects.requireNonNull((BMBukkitPlugin) Bukkit.getPluginManager().getPlugin("BanManager"))
-            .getPlugin();
-    this.setupBmActor();
-    this.getLogger().info("Hooked into BanManager (%s), created actor (%s)".formatted(this.bm, this.actor));
+    final var banManager = Bukkit.getPluginManager().getPlugin("BanManager");
+    if (banManager instanceof BMBukkitPlugin bmBukkitPlugin) {
+      this.bm = bmBukkitPlugin.getPlugin();
+      this.setupBmActor();
+      this.getLogger().info("Hooked into BanManager (%s), created actor (%s)".formatted(this.bm, this.actor));
+    }
+    final var libertyBans = Bukkit.getPluginManager().getPlugin("LibertyBans");
+    if (libertyBans != null) {
+      Omnibus omnibus = OmnibusProvider.getOmnibus();
+      this.liberty = omnibus.getRegistry().getProvider(LibertyBans.class).orElseThrow();
+      this.getLogger().info("Hooked into LibertyBans (%s)".formatted(this.liberty));
+    }
   }
 
   public void networkBroadcast(@NotNull Component c, @Nullable CommandSender sender) {
@@ -213,22 +229,45 @@ public final class ChatFilter extends JavaPlugin implements Listener {
   }
 
   public void mute(Player player, String reason) {
-    this.getServer().getScheduler().runTaskAsynchronously(this, () -> {
-      try {
-        var storage = this.bm.getPlayerStorage();
-        var target = storage.queryForId(UUIDUtils.toBytes(player.getUniqueId()));
-        var mute = new PlayerMuteData(target, this.actor, reason, false, false);
-        var created = this.bm.getPlayerMuteStorage().mute(mute);
-        this.getLogger().info("MUTE ACTION %s -> %s".formatted(target, created));
-      } catch (SQLException ex) {
-        this.getLogger().severe("Failed to mute %s because of %s!!".formatted(player, ex));
-        ex.printStackTrace();
-      }
-    });
+    if (this.bm != null) {
+      this.getServer().getScheduler().runTaskAsynchronously(this, () -> {
+        try {
+          var storage = this.bm.getPlayerStorage();
+          var target = storage.queryForId(UUIDUtils.toBytes(player.getUniqueId()));
+          var mute = new PlayerMuteData(target, this.actor, reason, false, false);
+          var created = this.bm.getPlayerMuteStorage().mute(mute);
+          this.getLogger().info("MUTE ACTION %s -> %s".formatted(target, created));
+        } catch (SQLException ex) {
+          this.getLogger().severe("Failed to mute %s because of %s!!".formatted(player, ex));
+          ex.printStackTrace();
+        }
+      });
+    }
+    if (this.liberty != null) {
+      this.getServer().getScheduler().runTaskAsynchronously(this, () -> {
+        PunishmentDrafter drafter = this.liberty.getDrafter();
+
+        DraftPunishment draftBan = drafter.draftBuilder()
+            .type(PunishmentType.MUTE)
+            .victim(PlayerVictim.of(player.getUniqueId()))
+            .reason(reason).build();
+
+        draftBan.enactPunishment().thenAcceptAsync((punishment) -> punishment.ifPresentOrElse(
+            (p) -> this.getLogger().info("ID of the enacted punishment is %s".formatted(p.getIdentifier())),
+            ( ) -> this.getLogger().warning("Player %s/%s is already muted?".formatted(player.getName(), player.getUniqueId()))
+        ));
+      });
+    }
+    if (this.liberty == null && this.bm == null) {
+      this.getLogger().severe("Cannot mute %s/%s because no plugin is setup to handle mutes!".formatted(player.getName(), player.getUniqueId()));
+    }
   }
 
   public boolean isMuted(Player player) {
-    return this.bm.getPlayerMuteStorage().isMuted(player.getUniqueId());
+    if (this.bm != null) {
+      return this.bm.getPlayerMuteStorage().isMuted(player.getUniqueId());
+    }
+    return false;
   }
 
   public static <T> void shift(T[] array, T incoming) {
