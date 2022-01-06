@@ -17,19 +17,23 @@ import java.util.regex.Pattern;
 public record ChatListener(ChatFilter plugin) implements Listener {
   public static final StringDistance similarityChecker = new OptimalStringAlignment();
   private static final Pattern urlPattern = Pattern.compile(
-      "(?:^|[\\W])((ht|f)tp(s?)://|www\\.)"
+      "(?:^|[\\W])(https?://|www\\.)"
           + "(([\\w\\-]+\\.)+?([\\w\\-.~]+/?)+"
           + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};']*)",
       Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
+  // Knowingly using deprecated chat event because of legacy plugin incompatibility -- as AsyncPlayerChatEvent is fired
+  // before AsyncChatEvent, I have no way of cancelling the chat event before a legacy listener using
+  // AsyncPlayerChatEvent has already processed it...
   @EventHandler(priority = EventPriority.LOWEST)
-  public void onChat(AsyncPlayerChatEvent chat) {
+  public void onChat(@SuppressWarnings("deprecation") AsyncPlayerChatEvent chat) {
     if (!plugin.state()) return;
     if (chat.getMessage().startsWith("/")) return;
 
     final var player = chat.getPlayer();
     if (plugin.isMuted(player)) return;
 
+    // MemoizedChatMessage was only useful when AsyncChatEvent was still used, but I'm too lazy to get rid of it now.
     final var message = new MemoizedChatMessage(chat.getMessage());
 
     for (final var trigger : plugin.config().triggers()) {
@@ -105,7 +109,7 @@ public record ChatListener(ChatFilter plugin) implements Listener {
           if (pastMessage == null) continue;
           boolean foundViolation = false;
           // if (Duration.between(pastMessage.time(), now).compareTo(link.timeout()) > 0) continue; // Do we want timeouts on link detection?
-          for (final var messagePart : pastMessage.message().split("\\s+")) {
+          for (final var messagePart : pastMessage.message().split("\\s+")) { // Links can't contain spaces
             if (urlPattern.matcher(messagePart).matches()) foundViolation = true;
           }
           if (foundViolation) violations++; // extra indirection to avoid multiple increments per message
