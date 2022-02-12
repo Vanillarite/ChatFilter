@@ -26,7 +26,7 @@ public class Prefixer {
 
   private Component prefixMemo() {
     if (prefix == null) {
-      prefix = m.parse(miniMessagePrefix);
+      prefix = m.deserialize(miniMessagePrefix);
     }
     return prefix;
   }
@@ -51,12 +51,12 @@ public class Prefixer {
   }
 
   public void logged(String miniMessage) {
-    var component = m.parse(miniMessagePrefix + miniMessage);
+    var component = m.deserialize(miniMessagePrefix + miniMessage);
     loggedSend(component);
   }
 
   public Component component(String miniMessage, Placeholder<?>... placeholders) {
-    return m.deserialize( miniMessagePrefix + miniMessage, PlaceholderResolver.placeholders(placeholders));
+    return m.deserialize(miniMessagePrefix + miniMessage, PlaceholderResolver.placeholders(placeholders));
   }
 
   public Component component(String miniMessage, List<Placeholder<?>> placeholders) {
