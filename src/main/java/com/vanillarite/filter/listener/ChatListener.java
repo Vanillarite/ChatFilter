@@ -17,9 +17,14 @@ import java.util.regex.Pattern;
 public record ChatListener(ChatFilter plugin) implements Listener {
   public static final StringDistance similarityChecker = new OptimalStringAlignment();
   private static final Pattern urlPattern = Pattern.compile(
-      "(?:^|[\\W])(https?://|www\\.)"
+      "(?:^|[\\W])(https?://|www\\.|play\\.)"
           + "(([\\w\\-]+\\.)+?([\\w\\-.~]+/?)+"
           + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};']*)",
+      Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+  private static final Pattern urlPattern2 = Pattern.compile(
+      "(?:^|[\\W])(([\\w\\-]+\\.)+?([\\w\\-.~]+/?)+"
+          + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};']*)"
+          + "(\\.(com|tk|ml)|:\\d+)",
       Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
   // Knowingly using deprecated chat event because of legacy plugin incompatibility -- as AsyncPlayerChatEvent is fired
@@ -111,6 +116,7 @@ public record ChatListener(ChatFilter plugin) implements Listener {
           // if (Duration.between(pastMessage.time(), now).compareTo(link.timeout()) > 0) continue; // Do we want timeouts on link detection?
           for (final var messagePart : pastMessage.message().split("\\s+")) { // Links can't contain spaces
             if (urlPattern.matcher(messagePart).matches()) foundViolation = true;
+            if (urlPattern2.matcher(messagePart).matches()) foundViolation = true;
           }
           if (foundViolation) violations++; // extra indirection to avoid multiple increments per message
         }
