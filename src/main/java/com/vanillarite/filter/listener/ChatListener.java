@@ -24,7 +24,10 @@ public record ChatListener(ChatFilter plugin) implements Listener {
   private static final Pattern urlPattern2 = Pattern.compile(
       "(?:^|[\\W])(([\\w\\-]+\\.)+?([\\w\\-.~]+/?)+"
           + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};']*)"
-          + "(\\.(com|tk|ml)|:\\d+)",
+          + "(\\.(com|tk|ml|gg)|:\\d+)",
+      Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+  private static final Pattern ipPattern = Pattern.compile(
+      "\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\b",
       Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
   // Knowingly using deprecated chat event because of legacy plugin incompatibility -- as AsyncPlayerChatEvent is fired
@@ -117,6 +120,7 @@ public record ChatListener(ChatFilter plugin) implements Listener {
           for (final var messagePart : pastMessage.message().split("\\s+")) { // Links can't contain spaces
             if (urlPattern.matcher(messagePart).matches()) foundViolation = true;
             if (urlPattern2.matcher(messagePart).matches()) foundViolation = true;
+            if (ipPattern.matcher(messagePart).matches()) foundViolation = true;
           }
           if (foundViolation) violations++; // extra indirection to avoid multiple increments per message
         }
