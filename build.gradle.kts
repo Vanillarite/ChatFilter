@@ -23,7 +23,7 @@ dependencies {
     compileOnly("io.papermc.paper", "paper-api", "1.18-R0.1-SNAPSHOT")
     implementation("cloud.commandframework", "cloud-paper", "1.6.0")
     implementation("cloud.commandframework", "cloud-annotations", "1.6.0")
-    implementation("net.kyori", "adventure-text-minimessage", "4.10.0-SNAPSHOT") {
+    implementation("net.kyori", "adventure-text-minimessage", "4.10.0-20220207.012501-47") {
         exclude("net.kyori", "adventure-api")
     }
     implementation("org.spongepowered", "configurate-yaml", "4.1.2")
