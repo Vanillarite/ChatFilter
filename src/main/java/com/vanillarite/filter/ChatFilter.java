@@ -46,7 +46,6 @@ import org.spongepowered.configurate.objectmapping.ObjectMapper;
 import org.spongepowered.configurate.util.NamingSchemes;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import space.arim.libertybans.api.LibertyBans;
-import space.arim.libertybans.api.PlayerOperator;
 import space.arim.libertybans.api.PlayerVictim;
 import space.arim.libertybans.api.PunishmentType;
 import space.arim.libertybans.api.punish.DraftPunishment;
@@ -59,7 +58,6 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 

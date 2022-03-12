@@ -2,8 +2,7 @@ package com.vanillarite.filter.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -55,23 +54,23 @@ public class Prefixer {
     loggedSend(component);
   }
 
-  public Component component(String miniMessage, Placeholder<?>... placeholders) {
-    return m.deserialize(miniMessagePrefix + miniMessage, PlaceholderResolver.placeholders(placeholders));
+  public Component component(String miniMessage, TagResolver... placeholders) {
+    return m.deserialize(miniMessagePrefix + miniMessage, placeholders);
   }
 
-  public Component component(String miniMessage, List<Placeholder<?>> placeholders) {
-    return m.deserialize(miniMessagePrefix + miniMessage, PlaceholderResolver.placeholders(placeholders));
+  public Component component(String miniMessage, List<TagResolver> placeholders) {
+    return m.deserialize(miniMessagePrefix + miniMessage, TagResolver.resolver(placeholders));
   }
 
-  public void logged(String miniMessage, Placeholder<?>... templates) {
+  public void logged(String miniMessage, TagResolver... templates) {
     loggedSend(component(miniMessage, templates));
   }
 
-  public void response(String miniMessage, Placeholder<?>... templates) {
+  public void response(String miniMessage, TagResolver... templates) {
     sender.sendMessage(component(miniMessage, templates));
   }
 
-  public void response(String miniMessage, List<Placeholder<?>> templates) {
+  public void response(String miniMessage, List<TagResolver> templates) {
     sender.sendMessage(component(miniMessage, templates));
   }
 }

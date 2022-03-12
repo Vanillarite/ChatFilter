@@ -20,12 +20,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper", "paper-api", "1.18-R0.1-SNAPSHOT")
-    implementation("cloud.commandframework", "cloud-paper", "1.6.0")
-    implementation("cloud.commandframework", "cloud-annotations", "1.6.0")
-    implementation("net.kyori", "adventure-text-minimessage", "4.10.0-20220207.012501-47") {
-        exclude("net.kyori", "adventure-api")
-    }
+    compileOnly("io.papermc.paper", "paper-api", "1.18.2-R0.1-SNAPSHOT")
+    implementation("cloud.commandframework", "cloud-paper", "1.6.2")
+    implementation("cloud.commandframework", "cloud-annotations", "1.6.2")
     implementation("org.spongepowered", "configurate-yaml", "4.1.2")
     compileOnly("me.confuser.banmanager", "BanManagerCommon", "7.6.0-SNAPSHOT")
     compileOnly("me.confuser.banmanager", "BanManagerBukkit", "7.6.0-SNAPSHOT")
@@ -52,7 +49,6 @@ tasks {
 
         relocate("cloud.commandframework", "${rootProject.group}.filter.shade.cloud")
         relocate("io.leangen.geantyref", "${rootProject.group}.filter.shade.typetoken")
-        relocate("net.kyori.adventure.text.minimessage", "${rootProject.group}.filter.shade.minimessage")
         relocate("org.spongepowered.configurate", "${rootProject.group}.filter.shade.configurate")
         relocate("info.debatty", "${rootProject.group}.filter.shade.debatty")
 

@@ -4,7 +4,7 @@ import com.vanillarite.filter.ChatFilter;
 import com.vanillarite.filter.config.PrefixKind;
 import com.vanillarite.filter.util.MemoizedChatMessage;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.event.player.PlayerEvent;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 
