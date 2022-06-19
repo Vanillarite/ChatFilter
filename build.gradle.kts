@@ -20,9 +20,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper", "paper-api", "1.18.2-R0.1-SNAPSHOT")
-    implementation("cloud.commandframework", "cloud-paper", "1.6.2")
-    implementation("cloud.commandframework", "cloud-annotations", "1.6.2")
+    compileOnly("io.papermc.paper", "paper-api", "1.19-R0.1-SNAPSHOT")
+    implementation("cloud.commandframework", "cloud-paper", "1.7.0")
+    implementation("cloud.commandframework", "cloud-annotations", "1.7.0")
     implementation("org.spongepowered", "configurate-yaml", "4.1.2")
     compileOnly("me.confuser.banmanager", "BanManagerCommon", "7.6.0-SNAPSHOT")
     compileOnly("me.confuser.banmanager", "BanManagerBukkit", "7.6.0-SNAPSHOT")
