@@ -5,7 +5,7 @@ plugins {
 
 val buildNum = System.getenv("CI_PIPELINE_IID") ?: "dirty"
 group = "com.vanillarite"
-version = "0.2.4-$buildNum"
+version = "0.2.5-$buildNum"
 
 repositories {
     mavenCentral()
@@ -21,8 +21,8 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper", "paper-api", "1.19-R0.1-SNAPSHOT")
-    implementation("cloud.commandframework", "cloud-paper", "1.7.0")
-    implementation("cloud.commandframework", "cloud-annotations", "1.7.0")
+    implementation("cloud.commandframework", "cloud-paper", "1.8.3")
+    implementation("cloud.commandframework", "cloud-annotations", "1.8.3")
     implementation("org.spongepowered", "configurate-yaml", "4.1.2")
     compileOnly("me.confuser.banmanager", "BanManagerCommon", "7.6.0-SNAPSHOT")
     compileOnly("me.confuser.banmanager", "BanManagerBukkit", "7.6.0-SNAPSHOT")
