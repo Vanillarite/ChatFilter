@@ -1,15 +1,15 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.gradleup.shadow") version "8.3.1"
     java
 }
 
 val buildNum = System.getenv("CI_PIPELINE_IID") ?: "dirty"
 group = "com.vanillarite"
-version = "0.2.5-$buildNum"
+version = "0.3.0-$buildNum"
 
 repositories {
     mavenCentral()
-    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://oss.sonatype.org/content/groups/public/")
     maven("https://repo.incendo.org/content/repositories/snapshots")
     maven("https://ci.frostcast.net/plugin/repository/everything")
@@ -20,9 +20,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper", "paper-api", "1.19-R0.1-SNAPSHOT")
-    implementation("cloud.commandframework", "cloud-paper", "1.8.3")
-    implementation("cloud.commandframework", "cloud-annotations", "1.8.3")
+    compileOnly("io.papermc.paper", "paper-api", "1.21.4-R0.1-SNAPSHOT")
+    implementation("org.incendo", "cloud-paper", "2.0.0-beta.10")
+    implementation("org.incendo", "cloud-annotations", "2.0.0")
     implementation("org.spongepowered", "configurate-yaml", "4.1.2")
     compileOnly("me.confuser.banmanager", "BanManagerCommon", "7.6.0-SNAPSHOT")
     compileOnly("me.confuser.banmanager", "BanManagerBukkit", "7.6.0-SNAPSHOT")
@@ -31,8 +31,7 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 tasks {
@@ -51,6 +50,7 @@ tasks {
         relocate("io.leangen.geantyref", "${rootProject.group}.filter.shade.typetoken")
         relocate("org.spongepowered.configurate", "${rootProject.group}.filter.shade.configurate")
         relocate("info.debatty", "${rootProject.group}.filter.shade.debatty")
+        relocate("org.yaml.snakeyaml", "${rootProject.group}.filter.shade.snakeyaml")
 
         archiveClassifier.set(null as String?)
         destinationDirectory.set(rootProject.tasks.shadowJar.get().destinationDirectory.get())

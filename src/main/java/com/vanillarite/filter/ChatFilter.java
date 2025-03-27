@@ -1,13 +1,5 @@
 package com.vanillarite.filter;
 
-import cloud.commandframework.CommandTree;
-import cloud.commandframework.annotations.AnnotationParser;
-import cloud.commandframework.arguments.parser.ParserParameters;
-import cloud.commandframework.arguments.parser.StandardParameters;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
-import cloud.commandframework.execution.CommandExecutionCoordinator;
-import cloud.commandframework.meta.CommandMeta;
-import cloud.commandframework.paper.PaperCommandManager;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
@@ -39,6 +31,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.incendo.cloud.annotations.AnnotationParser;
+import org.incendo.cloud.bukkit.CloudBukkitCapabilities;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.paper.LegacyPaperCommandManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurateException;
@@ -56,10 +52,7 @@ import space.arim.omnibus.OmnibusProvider;
 import java.io.File;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
 
 public final class ChatFilter extends JavaPlugin implements Listener {
   public static final MiniMessage m = MiniMessage.miniMessage();
@@ -124,46 +117,12 @@ public final class ChatFilter extends JavaPlugin implements Listener {
       e.printStackTrace();
     }
 
-    final Function<CommandTree<CommandSender>, CommandExecutionCoordinator<CommandSender>>
-        executionCoordinatorFunction =
-        AsynchronousCommandExecutionCoordinator.<CommandSender>newBuilder().build();
-    final Function<CommandSender, CommandSender> mapperFunction = Function.identity();
-    PaperCommandManager<CommandSender> manager;
-    try {
-      manager =
-          new PaperCommandManager<>(
-              this, executionCoordinatorFunction, mapperFunction, mapperFunction);
-    } catch (final Exception e) {
-      getLogger().severe("Failed to initialize the command manager");
-      getServer().getPluginManager().disablePlugin(this);
-      return;
+    final LegacyPaperCommandManager<CommandSender> manager =
+            LegacyPaperCommandManager.createNative(this, ExecutionCoordinator.simpleCoordinator());
+    if (manager.hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
+      manager.registerBrigadier();
     }
-    manager.registerBrigadier();
-    manager.registerAsynchronousCompletions();
-    manager.setCommandSuggestionProcessor((context, strings) -> {
-      final String input;
-      if (context.getInputQueue().isEmpty()) {
-        input = "";
-      } else {
-        input = context.getInputQueue().peek();
-      }
-      final List<String> suggestions = new LinkedList<>();
-      for (final String suggestion : strings) {
-        if (suggestion.toLowerCase().startsWith(input.toLowerCase())) {
-          suggestions.add(suggestion);
-        }
-      }
-      return suggestions;
-    });
-    final Function<ParserParameters, CommandMeta> commandMetaFunction =
-        p ->
-            CommandMeta.simple()
-                .with(
-                    CommandMeta.DESCRIPTION,
-                    p.get(StandardParameters.DESCRIPTION, "No description"))
-                .build();
-    AnnotationParser<CommandSender> annotationParser =
-        new AnnotationParser<>(manager, CommandSender.class, commandMetaFunction);
+    AnnotationParser<CommandSender> annotationParser = new AnnotationParser<>(manager, CommandSender.class);
     annotationParser.parse(new Commands(this));
 
     this.getServer().getPluginManager().registerEvents(this, this);

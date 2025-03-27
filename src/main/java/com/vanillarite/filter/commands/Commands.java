@@ -1,16 +1,17 @@
 package com.vanillarite.filter.commands;
 
-import cloud.commandframework.annotations.Argument;
-import cloud.commandframework.annotations.CommandMethod;
-import cloud.commandframework.annotations.CommandPermission;
 import com.vanillarite.filter.ChatFilter;
 import org.bukkit.command.CommandSender;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.Default;
+import org.incendo.cloud.annotations.Permission;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.configurate.ConfigurateException;
 
 public record Commands(ChatFilter plugin) {
-  @CommandMethod("chatfilter reload")
-  @CommandPermission("chatfilter.reload")
+  @Command("chatfilter reload")
+  @Permission("chatfilter.reload")
   private void commandReload(final @NotNull CommandSender sender) {
     try {
       plugin.loadConfig();
@@ -23,11 +24,11 @@ public record Commands(ChatFilter plugin) {
     }
   }
 
-  @CommandMethod("chatfilter toggle [state]")
-  @CommandPermission("chatfilter.toggle")
+  @Command("chatfilter toggle [state]")
+  @Permission("chatfilter.toggle")
   private void commandToggle(
       final @NotNull CommandSender sender,
-      final @Argument(value = "state", defaultValue = "false") @NotNull String state
+      final @Argument("state") @Default("false") @NotNull String state
   ) {
     boolean newState = state.equals("on");
     plugin.state(newState);
