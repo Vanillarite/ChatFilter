@@ -46,7 +46,7 @@ tasks {
             exclude(dependency("net.jcip:"))
         }
 
-        relocate("cloud.commandframework", "${rootProject.group}.filter.shade.cloud")
+        relocate("org.incendo.cloud", "${rootProject.group}.filter.shade.cloud")
         relocate("io.leangen.geantyref", "${rootProject.group}.filter.shade.typetoken")
         relocate("org.spongepowered.configurate", "${rootProject.group}.filter.shade.configurate")
         relocate("info.debatty", "${rootProject.group}.filter.shade.debatty")
