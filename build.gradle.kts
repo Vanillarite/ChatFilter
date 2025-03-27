@@ -42,7 +42,6 @@ tasks {
             exclude(dependency("org.checkerframework:"))
             exclude(dependency("org.jetbrains:"))
             exclude(dependency("org.intellij:"))
-            exclude(dependency("org.yaml:snakeyaml:"))
             exclude(dependency("net.jcip:"))
         }
 
